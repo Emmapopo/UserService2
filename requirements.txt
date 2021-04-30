@@ -1,0 +1,10 @@
+psycopg2
+grpcio
+sqlalchemy
+flask
+google
+protobuf
+python-dateutil
+grpc-tools
+protoc-gen-validate
+grpcio-tools
