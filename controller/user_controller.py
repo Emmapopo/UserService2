@@ -35,6 +35,9 @@ class UserController:
         except:
             self.session.rollback()
 
+    def get_user_version(self,id):
+        user_version = self.session.query(User.version).filter_by(id=id).first()
+        return user_version
 
     #This method returns None if user does not exist. 
     def user_exist(self, email):
