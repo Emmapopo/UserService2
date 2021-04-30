@@ -84,7 +84,7 @@ class UserServicer(user_pb2_grpc.UserServicer):
 
         try: 
             user = user_controller.get_user(request.id)
-          
+            
             if request.first_name != '':
                 user.first_name = request.first_name
 
@@ -101,6 +101,9 @@ class UserServicer(user_pb2_grpc.UserServicer):
                 user.state_id = request.state_id
 
         
+            user_version = user_controller.get_user_version(user.id)
+            new_version = user_version[0] + 1
+            user.version = new_version
             user_controller.update_user(user)
 
             response.status = "user update successful"
