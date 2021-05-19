@@ -12,6 +12,7 @@ class UserController:
 
     def add_user(self, user_data):
         self.session.add(user_data)
+        self.session.commit()
         try:
             self.session.commit()
         except:
