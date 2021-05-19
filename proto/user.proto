@@ -45,6 +45,7 @@ message UpdateUserRequest{
 
 message UpdateUserResponse{
     string status = 1;
+    UserMessage user = 2;
 }
 
 message DeleteUserRequest{
