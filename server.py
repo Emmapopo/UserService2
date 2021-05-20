@@ -1,5 +1,9 @@
 import datetime
 
+from sqlalchemy.sql.expression import null
+import json
+from google.protobuf.json_format import MessageToJson, Parse
+
 #import the generated class
 from proto import user_pb2
 from proto import user_pb2_grpc
@@ -73,9 +77,15 @@ class UserServicer(user_pb2_grpc.UserServicer):
        
         return response
 
+    def UserToPB(self, user):
+        user = user_pb2.UserMessage()
+        
+        return user
+
 
     def UpdateUser(self, request, context):
         response = user_pb2.UpdateUserResponse()
+        
 
         update_variables = []
         update_values = []
@@ -131,19 +141,33 @@ class UserServicer(user_pb2_grpc.UserServicer):
                 user.state_id = request.state_id
                 logger.info(f"user {request.id} updated state_id with {request.state_id}")
 
-            user_version = self.UserController.get_user_version(user.id)
-            new_version = user_version[0] + 1
-            user.version = new_version
+
+            user.version = int(user.version) + 1
             self.UserController.update_user(user)
 
+            dob = user.date_of_birth
+            dob_str = str(dob.year) + '-' + str(dob.month) + '-' + str(dob.day) 
+            dob_obj = datetime.datetime.strptime(dob_str, "%Y-%m-%d")
+            dob = PtimeToPBtime(dob_obj)
+        
             response.status = "user update successful"
+            response.user.id = user.id
+            response.user.first_name = user.first_name
+            response.user.last_name = user.last_name
+            response.user.user_name = user.user_name
+            response.user.email = user.email
+            response.user.password = user.password
+            response.user.phone_number = user.phone_number
+            response.user.date_of_birth.seconds = dob.seconds
+            response.user.date_of_birth.nanos = dob.nanos
+            response.user.state_id = user.state_id
+            response.user.version = user.version
+
             logger.info(f"user {request.id} update complete")
 
         except:
             response.status = "user update failed"
-            logger.error("Exception occured", exc_info=True)
-
-
+   
         return response
 
 
