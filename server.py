@@ -183,12 +183,19 @@ class UserServicer(user_pb2_grpc.UserServicer):
             return response
 
         try:
-            self.UserController.delete_user(request.id)
-            logger.info(f"user {request.id} account deleted")
-            response.status = "success"
+            
+            if self.UserController.get_user(request.id) is not None:
+                self.UserController.delete_user(request.id)
+                logger.info(f"user {request.id} account deleted")
+                response.status = "user deleted successfully"
+
+            else:
+                response.status = "user not found for deletion"
+                logger.info(f"user {request.id} not found for deletion")
+
         except:
             logger.error("Exception occured", exc_info=True)
-            response.status = "failed"
+            response.status = "user failed to delete"
 
         return response
 
