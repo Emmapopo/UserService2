@@ -61,15 +61,17 @@ message GetUserRequest{
 }
 
 message GetUserResponse{
-    string id = 1;
-    string first_name = 2;
-    string last_name = 3;
-    string user_name = 4;
-    string email = 5;
-    string password = 6;
-    string phone_number = 7;
-    google.protobuf.Timestamp date_of_birth = 8;
-    int32 state_id = 9;
+    string status = 10;
+    UserMessage user = 11;
+    // string id = 1;
+    // string first_name = 2;
+    // string last_name = 3;
+    // string user_name = 4;
+    // string email = 5;
+    // string password = 6;
+    // string phone_number = 7;
+    // google.protobuf.Timestamp date_of_birth = 8;
+    // int32 state_id = 9;
 }
 
 

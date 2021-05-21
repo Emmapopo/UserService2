@@ -211,21 +211,39 @@ class UserServicer(user_pb2_grpc.UserServicer):
             logger.error("ValidationFailed occured", exc_info=True)
             return response
 
-        user = self.UserController.get_user(request.id)
-        response.id = user.id
-        response.first_name = user.first_name
-        response.last_name = user.last_name
-        response.user_name = user.user_name
-        response.email = user.email
-        response.password = user.password
-        response.phone_number = user.phone_number
-        dob = user.date_of_birth
-        dob = datetime.datetime(dob.year, dob.month, dob.day)
-        response.date_of_birth.seconds = PtimeToPBtime(dob).seconds
-        response.date_of_birth.nanos = PtimeToPBtime(dob).nanos
-        response.state_id = user.state_id
+        try:
+            user = self.UserController.get_user(request.id)
 
-        logger.info(f"returns user {request.id} account details")
+            if user is not None:               
+                user.version = int(user.version) + 1
+
+                dob = user.date_of_birth
+                dob_str = str(dob.year) + '-' + str(dob.month) + '-' + str(dob.day)
+                dob_obj = datetime.datetime.strptime(dob_str, "%Y-%m-%d")
+                dob = PtimeToPBtime(dob_obj)
+
+                response.status = "success"
+                response.user.id = user.id
+                response.user.first_name = user.first_name
+                response.user.last_name = user.last_name
+                response.user.user_name = user.user_name
+                response.user.email = user.email
+                response.user.password = user.password
+                response.user.phone_number = user.phone_number
+                response.user.date_of_birth.seconds = dob.seconds
+                response.user.date_of_birth.nanos = dob.nanos
+                response.user.state_id = user.state_id
+                response.user.version = user.version
+
+                logger.info(f"returns user {request.id} account details")
+
+            else:
+                response.status = "user does not exist"
+                logger.info(f"user {request.id} does not exist")
+
+        except:
+            response.status = "failed"
+            logger.info(f"failed to return user {request.id} details")
 
         return response
 
