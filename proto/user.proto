@@ -1,0 +1,83 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+package examplepb;
+import "validate/validate/validate.proto";
+
+
+message CreateUserRequest{
+    string id = 1 [(validate.rules).string.uuid = true];
+    string first_name = 2 [(validate.rules).string.min_len = 1];
+    string last_name = 3 [(validate.rules).string.min_len = 1];
+    string user_name = 4 [(validate.rules).string.min_len = 1];
+    string email = 5 [(validate.rules).string.email = true];
+    string password = 6 [(validate.rules).string.min_len = 1];
+    string phone_number = 7;
+    google.protobuf.Timestamp date_of_birth = 8 [(validate.rules).timestamp.required = true];
+    int32 state_id = 9 [(validate.rules).fixed32 = {gte:1, lt: 38}];
+}
+
+    
+message CreateUserResponse{
+    string status = 1;
+}
+message UserMessage{
+    string id = 1;
+    string first_name = 2;
+    string last_name = 3;
+    string user_name = 4;
+    string email = 5; 
+    string password = 6;
+    string phone_number = 7;
+    google.protobuf.Timestamp date_of_birth = 8;
+    int32 state_id = 9;
+    int32 version = 10;
+
+}
+message UpdateUserRequest{
+    string id = 1 [(validate.rules).string.uuid = true];
+    string first_name = 2;
+    string last_name = 3;
+    string password = 4;
+    string phone_number = 5;
+    int32 state_id = 6 [(validate.rules).fixed32 = {gte:0, lt: 38}]; 
+}
+
+message UpdateUserResponse{
+    string status = 1;
+    UserMessage user = 2;
+}
+
+message DeleteUserRequest{
+    string id = 1 [(validate.rules).string.uuid = true];    
+}
+
+message DeleteUserResponse{
+    string status = 1;
+}
+
+message GetUserRequest{
+    string id = 1 [(validate.rules).string.uuid = true];
+}
+
+message GetUserResponse{
+    string status = 10;
+    UserMessage user = 11;
+    // string id = 1;
+    // string first_name = 2;
+    // string last_name = 3;
+    // string user_name = 4;
+    // string email = 5;
+    // string password = 6;
+    // string phone_number = 7;
+    // google.protobuf.Timestamp date_of_birth = 8;
+    // int32 state_id = 9;
+}
+
+
+service User{
+    rpc CreateUser (CreateUserRequest) returns (CreateUserResponse){}
+    rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse){}
+    rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse){}
+    rpc GetUser (GetUserRequest) returns (GetUserResponse){}
+}
